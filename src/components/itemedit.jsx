@@ -243,13 +243,13 @@ function ItemEdit({ itemElem }) {
         const stat = allStatAwakeParameters[option];
 
         if(stat === 'None') {
-            delete(itemElem.statAwakes[index]);
+            itemElem.statAwakes[index] = null;
         } else {
             itemElem.statAwakes[index] = {parameter: stat, add: 1, rate: false};
 
             const theOtherIndex = index == 1 ? 0 : 1;
-            if(itemElem.statAwakes[theOtherIndex]) {
-                itemElem.statAwakes[theOtherIndex].add = Math.min(getMaxStatAwakeValue(), itemElem.statAwakes[theOtherIndex].add)
+            if(itemElem.statAwakes[theOtherIndex] != null) {
+                itemElem.statAwakes[theOtherIndex].add = Math.min(getMaxStatAwakeValue(index), itemElem.statAwakes[theOtherIndex].add)
             }
         }
 
@@ -262,10 +262,18 @@ function ItemEdit({ itemElem }) {
         setState(!state);
     }
 
-    function getMaxStatAwakeValue() {
-        return itemElem.statAwakes.length == 2
-            ? 3
-            : 4;
+    function getMaxStatAwakeValue(slot) {
+        if(itemElem.statAwakes.filter((e) => e).length == 2) {
+            const theOtherIndex = slot == 1 ? 0 : 1;
+
+            if(itemElem.statAwakes[theOtherIndex].add === 3) {
+                return 2;
+            } else {
+                return 3;
+            }
+        }
+        
+        return 4;
     }
 
     return (
@@ -464,7 +472,7 @@ function ItemEdit({ itemElem }) {
                             value={itemElem.statAwakes[0]?.add ?? 0}
                             isRange={false}
                             min={1}
-                            max={getMaxStatAwakeValue()}
+                            max={getMaxStatAwakeValue(0)}
                             prefix={"+"}
                             step={1}
                         />
@@ -477,7 +485,7 @@ function ItemEdit({ itemElem }) {
                             value={itemElem.statAwakes[1]?.add ?? 0}
                             isRange={false}
                             min={1}
-                            max={getMaxStatAwakeValue()}
+                            max={getMaxStatAwakeValue(1)}
                             prefix={"+"}
                             step={1}
                         />

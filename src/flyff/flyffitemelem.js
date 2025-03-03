@@ -16,7 +16,7 @@ export default class ItemElem {
     originAwake = null;
     skillAwake = null;
     petStats = { F: 1, E: null, D: null, C: null, B: null, A: null, S: null }; // default value
-    statAwakes = [];
+    statAwakes = [null, null];
 
 
     constructor(itemProp) {
