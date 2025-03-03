@@ -27,7 +27,7 @@ function Dropdown({ options, onSelectionChanged, valueKey, onRemove, style }) {
                 opened &&
                 <div className="flyff-dropdown-options">
                     {
-                        Object.entries(options).map(([key, value], ) => (
+                        Object.entries(options).map(([key, value], ) => value && (
                             <div key={key} style={{position: "relative"}}>
                                 <option value={key} onClick={() => selectOption(key)}>{value}</option>
                                 {

@@ -9,6 +9,7 @@ import NumberInput from './numberinput';
 import * as Utils from '../flyff/flyffutils';
 import blessings from '../assets/Blessings.json';
 import skillAwakes from '../assets/SkillAwakes.json';
+import statAwakes from '../assets/StatAwakes.json';
 
 function ItemEdit({ itemElem }) {
     const [state, setState] = useState(false);
@@ -225,6 +226,48 @@ function ItemEdit({ itemElem }) {
         e.stopPropagation();
     }
 
+    // StatAwake
+    
+    const allStatAwakeParameters = [ 'None' ];
+    for(const statAwake of statAwakes) {
+        for(const ability of statAwake.abilities) {
+            if(allStatAwakeParameters.includes(ability.parameter)) {
+                continue;
+            }
+
+            allStatAwakeParameters.push(ability.parameter)
+        }
+    }
+
+    function setStatAwakeOption(index, option) {
+        const stat = allStatAwakeParameters[option];
+
+        if(stat === 'None') {
+            delete(itemElem.statAwakes[index]);
+        } else {
+            itemElem.statAwakes[index] = {parameter: stat, add: 1, rate: false};
+
+            const theOtherIndex = index == 1 ? 0 : 1;
+            if(itemElem.statAwakes[theOtherIndex]) {
+                itemElem.statAwakes[theOtherIndex].add = Math.min(getMaxStatAwakeValue(), itemElem.statAwakes[theOtherIndex].add)
+            }
+        }
+
+        setState(!state)
+    }
+
+    function setStatAwakeValue(index, value) {
+        itemElem.statAwakes[index].add = value;
+
+        setState(!state);
+    }
+
+    function getMaxStatAwakeValue() {
+        return itemElem.statAwakes.length == 2
+            ? 3
+            : 4;
+    }
+
     return (
         <div className="item-edit">
             <div id="edit-header">
@@ -407,6 +450,41 @@ function ItemEdit({ itemElem }) {
                     </div>
                 </div>
             }
+
+            
+            {
+                itemElem.isStatAwakeAble() &&
+                <div className="column">
+                    <h3>Stat Awake</h3>
+                    <Dropdown options={allStatAwakeParameters.map(e => e != itemElem.statAwakes[1]?.parameter ? e : null)} onSelectionChanged={(e) => setStatAwakeOption(0, e)} valueKey={itemElem.statAwakes[0]  ? allStatAwakeParameters.indexOf(itemElem.statAwakes[0].parameter) : 0} style={{ minWidth: "200px" }} />
+                    <div className="row">
+                        <RangeInput
+                            disabled={itemElem.statAwakes[0] == null}
+                            onChange={(e) => setStatAwakeValue(0, e)}
+                            value={itemElem.statAwakes[0]?.add ?? 0}
+                            isRange={false}
+                            min={1}
+                            max={getMaxStatAwakeValue()}
+                            prefix={"+"}
+                            step={1}
+                        />
+                    </div>
+                    <Dropdown options={allStatAwakeParameters.map(e => e != itemElem.statAwakes[0]?.parameter ? e : null)} onSelectionChanged={(e) => setStatAwakeOption(1, e)} valueKey={itemElem.statAwakes[1] ? allStatAwakeParameters.indexOf(itemElem.statAwakes[1].parameter) : 0} style={{ minWidth: "200px" }} />
+                    <div className="row">
+                        <RangeInput
+                            disabled={itemElem.statAwakes[1] == null}
+                            onChange={(e) => setStatAwakeValue(1, e)}
+                            value={itemElem.statAwakes[1]?.add ?? 0}
+                            isRange={false}
+                            min={1}
+                            max={getMaxStatAwakeValue()}
+                            prefix={"+"}
+                            step={1}
+                        />
+                    </div>
+                </div>
+            }
+
         </div>
     );
 }

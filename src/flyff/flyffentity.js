@@ -829,6 +829,15 @@ export default class Entity {
                     total += ability.add;
                 }
             }
+
+            // Item Awakes (Statscrolls, dropped)
+            for(const itemAwake of itemElem.statAwakes) {
+                if (!targetStats.includes(itemAwake.parameter) || itemAwake.rate != rate) {
+                    continue;
+                }
+
+                total += itemAwake.add;
+            }
         }
 
         // Armor set stuff
